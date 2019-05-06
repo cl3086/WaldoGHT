@@ -3,28 +3,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.ndimage.filters import sobel
 
-referenceImage = cv2.imread("referenceimage1.jpg")
-grayscale = cv2.cvtColor(referenceImage, cv2.COLOR_BGR2GRAY)
-blurredImage = cv2.GaussianBlur(grayscale, (3, 3), 0)
-referenceEdges = cv2.Canny(blurredImage, 10, 200)
-
-
-image = cv2.imread("waldo1.jpg")
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-blurredImage = cv2.GaussianBlur(gray, (3, 3), 0)
-edges = cv2.Canny(blurredImage, 10, 200)
-
-
-# show the images
-# cv2.imshow("Original", image)
-# cv2.imshow("Edges", edges)
-# cv2.imshow("Reference Image", referenceEdges)
-# cv2.imwrite("test.jpg", edges)
-# cv2.imwrite("referenceEdges.jpg", referenceEdges)
-# cv2.waitKey(0)
-
-imageOrigin = (16,18)
-
 def createRTable(referenceEdges, imageOrigin):
     dx = sobel(referenceEdges, axis=0)
     dy = sobel(referenceEdges, axis=1)
@@ -63,20 +41,62 @@ def getMaxVote(accumulator, length, width):
     coordinates = (-1,-1)
     for i in range(length):
         for j in range(width):
-            if accumulator[i][j] > max:
-                coordinates = (i, j)
+            if accumulator[i][j] >= max:
+                coordinates = (j, i)
                 max = accumulator[i][j]
     return coordinates
 
-RTable = createRTable(referenceEdges, imageOrigin)
-accumulator = createAccumulatorArray(edges, RTable)
-length, width = edges.shape
-coordinates = getMaxVote(accumulator, length, width)
-print(coordinates)
+def getEdges(path, minThreshold, maxThreshold):
+    image = cv2.imread(path)
+    grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blurredImage = cv2.GaussianBlur(grayscale, (3, 3), 0)
+    return cv2.Canny(blurredImage, minThreshold, maxThreshold)
 
-topLeft = (int(coordinates[1] - imageOrigin[0]), int(coordinates[0] + imageOrigin[1]))
-bottomRight = (int(coordinates[1] + imageOrigin[0]), int(coordinates[0] - imageOrigin[1]))
-print(topLeft, bottomRight)
-img = cv2.rectangle(image, topLeft, bottomRight, (0,255,0), 3)
-cv2.imshow("Image", img)
-cv2.waitKey(0)
+def houghTransform(image, imageEdges, referenceEdges, origin):
+    RTable = createRTable(referenceEdges, origin)
+    accumulator = createAccumulatorArray(imageEdges, RTable)
+    length, width = imageEdges.shape
+    coordinates = getMaxVote(accumulator, length, width)
+
+    print(coordinates)
+    length, width = referenceEdges.shape
+    topLeft = (int(coordinates[0] - width/2), int(coordinates[1] + length/2))
+    bottomRight = (int(coordinates[0] + width/2), int(coordinates[1] - length/2))
+    img = cv2.rectangle(image, topLeft, bottomRight, (0,255,0), 3)
+    cv2.imshow("Where's Waldo", img)
+
+def main():
+    image1 = cv2.imread("waldo1.jpg")
+    referenceEdges1 = getEdges("referenceImage1.jpg", 150, 200)
+    edges1 = getEdges("waldo1.jpg", 150, 200)
+    image1Origin = (16,18)
+    houghTransform(image1, edges1, referenceEdges1, image1Origin)
+
+    # image2 = cv2.imread("waldo2.jpg")
+    # referenceEdges2 = getEdges("referenceImage2.jpg", 200, 200)
+    # edges2 = getEdges("waldo2.jpg", 100, 200)
+    # cv2.imshow("test", referenceEdges2)
+    # cv2.imshow("test2", edges2)
+    # image2Origin = (31, 54)
+    # houghTransform(image2, edges2, referenceEdges2, image2Origin)
+
+    # image3 = cv2.imread("waldo3.jpg")
+    # referenceEdges3 = getEdges("referenceImage3.jpg", 175, 300)
+    # edges3 = getEdges("waldo3.jpg", 150, 200)
+    # cv2.imshow("test", referenceEdges3)
+    # cv2.imshow("test2", edges3)
+    # image3Origin = (85, 85)
+    # houghTransform(image3, edges3, referenceEdges3, image3Origin)
+
+    # image4 = cv2.imread("waldo4.jpg")
+    # referenceEdges4 = getEdges("referenceImage4.jpg", 100, 200)
+    # edges4 = getEdges("waldo4.jpg", 150, 300)
+    # image4Origin = (53, 78)
+    # cv2.imshow("test", referenceEdges4)
+    # cv2.imshow("test2", edges4)
+    # houghTransform(image4, edges4, referenceEdges4, image4Origin)
+
+    cv2.waitKey(0)
+
+if __name__ == "__main__":
+    main()
