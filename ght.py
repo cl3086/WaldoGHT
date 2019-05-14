@@ -68,61 +68,56 @@ def houghTransform(image, imageEdges, referenceEdges, origin):
     coordinates = getMaxVote(accumulator, length, width)
 
     length, width = referenceEdges.shape
-    # topLeft = (int(coordinates[0] - width/2), int(coordinates[1] + length/2))
-    # bottomRight = (int(coordinates[0] + width/2), int(coordinates[1] - length/2))
-
-    print(coordinates)
-    cv2.circle(image, coordinates, 10, (0,255,0), 5)
-    cv2.imshow("Where's Waldo", image)
+    topLeft = (int(coordinates[0] - width/2), int(coordinates[1] + length/2))
+    bottomRight = (int(coordinates[0] + width/2), int(coordinates[1] - length/2))
+    img = cv2.rectangle(image, topLeft, bottomRight, (0,255,0), 3)
+    cv2.imshow("Where's Waldo", img)
 
 def main():
     image1 = cv2.imread(os.path.join(SRC_DIR, "waldo1.jpg"))
     referenceEdges1 = getEdges(os.path.join(TEMPLATE_DIR, "referenceImage1.jpg"), 150, 200)
     edges1 = getEdges(os.path.join(SRC_DIR, "waldo1.jpg"), 150, 200)
-    cv2.imshow("test", referenceEdges1)
-    cv2.imshow("test1", edges1)
     image1Origin = (16,18)
     houghTransform(image1, edges1, referenceEdges1, image1Origin)
 
     cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-    # image2 = cv2.imread(os.path.join(SRC_DIR,"waldo2.jpg"))
-    # referenceEdges2 = getEdges(os.path.join(TEMPLATE_DIR,"referenceImage2.jpg"), 200, 200)
-    # edges2 = getEdges(os.path.join(SRC_DIR,"waldo2.jpg"), 100, 200)
-    # cv2.imshow("test", referenceEdges2)
-    # cv2.imshow("test2", edges2)
-    # image2Origin = (20, 50)
-    # houghTransform(image2, edges2, referenceEdges2, image2Origin)
-    #
-    # cv2.waitKey(0)
-    #
-    # image3 = cv2.imread("waldo3.jpg")
-    # referenceEdges3 = getEdges("referenceImage3.jpg", 175, 300)
-    # edges3 = getEdges("waldo3.jpg", 150, 200)
-    # cv2.imshow("test", referenceEdges3)
-    # cv2.imshow("test2", edges3)
-    # image3Origin = (85, 85)
-    # houghTransform(image3, edges3, referenceEdges3, image3Origin)
-    #
-    # cv2.waitKey(0)
-    #
-    # image4 = cv2.imread("waldo4.jpg")
-    # referenceEdges4 = getEdges("referenceImage4.jpg", 100, 200)
-    # edges4 = getEdges("waldo4.jpg", 150, 300)
-    # image4Origin = (53, 78)
-    # cv2.imshow("test", referenceEdges4)
-    # cv2.imshow("test2", edges4)
-    # houghTransform(image4, edges4, referenceEdges4, image4Origin)
-    #
-    # cv2.waitKey(0)
-    #
-    # image1 = cv2.imread(os.path.join(SRC_DIR, "waldo-draw-rotate-3.png"))
-    # referenceEdges1 = getEdges(os.path.join(TEMPLATE_DIR, "waldo-draw-templ.png"), 150, 200)
-    # edges1 = getEdges(os.path.join(SRC_DIR, "waldo-draw.png"), 150, 200)
-    # image1Origin = (45,45)
-    # houghTransform(image1, edges1, referenceEdges1, image1Origin)
-    #
-    # cv2.waitKey(0)
+    image2 = cv2.imread(os.path.join(SRC_DIR,"waldo2.jpg"))
+    referenceEdges2 = getEdges(os.path.join(TEMPLATE_DIR,"referenceImage2.jpg"), 200, 200)
+    edges2 = getEdges(os.path.join(SRC_DIR,"waldo2.jpg"), 100, 200)
+    image2Origin = (20, 50)
+    houghTransform(image2, edges2, referenceEdges2, image2Origin)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    image3 = cv2.imread(os.path.join(SRC_DIR,"waldo3.jpg"))
+    referenceEdges3 = getEdges(os.path.join(TEMPLATE_DIR,"referenceImage3.jpg"), 175, 300)
+    edges3 = getEdges(os.path.join(SRC_DIR,"waldo3.jpg"), 150, 200)
+    image3Origin = (85, 85)
+    houghTransform(image3, edges3, referenceEdges3, image3Origin)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    image4 = cv2.imread(os.path.join(SRC_DIR,"waldo4.jpg"))
+    referenceEdges4 = getEdges(os.path.join(TEMPLATE_DIR,"referenceImage4.jpg"), 100, 200)
+    edges4 = getEdges(os.path.join(SRC_DIR,"waldo4.jpg"), 150, 300)
+    image4Origin = (53, 78)
+    houghTransform(image4, edges4, referenceEdges4, image4Origin)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    image1 = cv2.imread(os.path.join(SRC_DIR, "waldo-draw-rotate-3.png"))
+    referenceEdges1 = getEdges(os.path.join(TEMPLATE_DIR, "waldo-draw-templ.png"), 150, 200)
+    edges1 = getEdges(os.path.join(SRC_DIR, "waldo-draw.png"), 150, 200)
+    image1Origin = (45,45)
+    houghTransform(image1, edges1, referenceEdges1, image1Origin)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
