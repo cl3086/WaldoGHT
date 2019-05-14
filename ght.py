@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.ndimage.filters import sobel
+from PIL import Image
 
 def createRTable(referenceEdges, imageOrigin):
     dx = sobel(referenceEdges, axis=0)
@@ -34,6 +35,9 @@ def createAccumulatorArray(imageEdges, RTable):
                     if i + vector[0] < length and j + vector[1] < width:
                         accumulator[i + vector[0], j + vector[1]] += 1
 
+    filteredImage = accumulator.astype('uint8')
+    img = Image.fromarray(filteredImage, 'L')
+    img.show()
     return accumulator
 
 def getMaxVote(accumulator, length, width):
@@ -62,18 +66,23 @@ def houghTransform(image, imageEdges, referenceEdges, origin):
     length, width = referenceEdges.shape
     topLeft = (int(coordinates[0] - width/2), int(coordinates[1] + length/2))
     bottomRight = (int(coordinates[0] + width/2), int(coordinates[1] - length/2))
-    img = cv2.rectangle(image, topLeft, bottomRight, (0,255,0), 3)
-    cv2.imshow("Where's Waldo", img)
+    print(topLeft, bottomRight)
+    cv2.circle(image, coordinates, 5, (0,255,0), -1)
+    cv2.imshow("Where's Waldo", image)
 
 def main():
     image1 = cv2.imread("waldo1.jpg")
-    referenceEdges1 = getEdges("referenceImage1.jpg", 150, 200)
+    # referenceEdges1 = getEdges("referenceImage1.jpg", 150, 200)
+    referenceEdges1 = getEdges("testReference.png", 200, 200)
     edges1 = getEdges("waldo1.jpg", 150, 200)
-    image1Origin = (16,18)
+    cv2.imshow("test", referenceEdges1)
+    cv2.imshow("test2", edges1)
+    # image1Origin = (16,18)
+    image1Origin = (102, 108)
     houghTransform(image1, edges1, referenceEdges1, image1Origin)
 
     # image2 = cv2.imread("waldo2.jpg")
-    # referenceEdges2 = getEdges("referenceImage2.jpg", 200, 200)
+    # # referenceEdges2 = getEdges("referenceImage2.jpg", 200, 200)
     # edges2 = getEdges("waldo2.jpg", 100, 200)
     # cv2.imshow("test", referenceEdges2)
     # cv2.imshow("test2", edges2)
