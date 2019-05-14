@@ -1,8 +1,13 @@
+import os
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.ndimage.filters import sobel
 from PIL import Image
+from collections import OrderedDict
+
+SRC_DIR = "img"
+TEMPLATE_DIR = "templates"
 
 def createRTable(referenceEdges, imageOrigin):
     dx = sobel(referenceEdges, axis=0)
@@ -18,7 +23,7 @@ def createRTable(referenceEdges, imageOrigin):
                 if phis[i,j] not in RTable:
                     RTable[phis[i,j]] = []
                 RTable[phis[i,j]].append((imageOrigin[0] - i, imageOrigin[1] - j))
-    return RTable
+    return OrderedDict(sorted(RTable.items()))
 
 def createAccumulatorArray(imageEdges, RTable):
     length, width = imageEdges.shape
@@ -62,33 +67,35 @@ def houghTransform(image, imageEdges, referenceEdges, origin):
     length, width = imageEdges.shape
     coordinates = getMaxVote(accumulator, length, width)
 
-    print(coordinates)
     length, width = referenceEdges.shape
-    topLeft = (int(coordinates[0] - width/2), int(coordinates[1] + length/2))
-    bottomRight = (int(coordinates[0] + width/2), int(coordinates[1] - length/2))
-    print(topLeft, bottomRight)
-    cv2.circle(image, coordinates, 5, (0,255,0), -1)
+    # topLeft = (int(coordinates[0] - width/2), int(coordinates[1] + length/2))
+    # bottomRight = (int(coordinates[0] + width/2), int(coordinates[1] - length/2))
+
+    print(coordinates)
+    cv2.circle(image, coordinates, 10, (0,255,0), 5)
     cv2.imshow("Where's Waldo", image)
 
 def main():
-    image1 = cv2.imread("waldo1.jpg")
-    # referenceEdges1 = getEdges("referenceImage1.jpg", 150, 200)
-    referenceEdges1 = getEdges("testReference.png", 200, 200)
-    edges1 = getEdges("waldo1.jpg", 150, 200)
+    image1 = cv2.imread(os.path.join(SRC_DIR, "waldo1.jpg"))
+    referenceEdges1 = getEdges(os.path.join(TEMPLATE_DIR, "referenceImage1.jpg"), 150, 200)
+    edges1 = getEdges(os.path.join(SRC_DIR, "waldo1.jpg"), 150, 200)
     cv2.imshow("test", referenceEdges1)
-    cv2.imshow("test2", edges1)
-    # image1Origin = (16,18)
-    image1Origin = (102, 108)
+    cv2.imshow("test1", edges1)
+    image1Origin = (16,18)
     houghTransform(image1, edges1, referenceEdges1, image1Origin)
 
-    # image2 = cv2.imread("waldo2.jpg")
-    # # referenceEdges2 = getEdges("referenceImage2.jpg", 200, 200)
-    # edges2 = getEdges("waldo2.jpg", 100, 200)
+    cv2.waitKey(0)
+
+    # image2 = cv2.imread(os.path.join(SRC_DIR,"waldo2.jpg"))
+    # referenceEdges2 = getEdges(os.path.join(TEMPLATE_DIR,"referenceImage2.jpg"), 200, 200)
+    # edges2 = getEdges(os.path.join(SRC_DIR,"waldo2.jpg"), 100, 200)
     # cv2.imshow("test", referenceEdges2)
     # cv2.imshow("test2", edges2)
-    # image2Origin = (31, 54)
+    # image2Origin = (20, 50)
     # houghTransform(image2, edges2, referenceEdges2, image2Origin)
-
+    #
+    # cv2.waitKey(0)
+    #
     # image3 = cv2.imread("waldo3.jpg")
     # referenceEdges3 = getEdges("referenceImage3.jpg", 175, 300)
     # edges3 = getEdges("waldo3.jpg", 150, 200)
@@ -96,7 +103,9 @@ def main():
     # cv2.imshow("test2", edges3)
     # image3Origin = (85, 85)
     # houghTransform(image3, edges3, referenceEdges3, image3Origin)
-
+    #
+    # cv2.waitKey(0)
+    #
     # image4 = cv2.imread("waldo4.jpg")
     # referenceEdges4 = getEdges("referenceImage4.jpg", 100, 200)
     # edges4 = getEdges("waldo4.jpg", 150, 300)
@@ -104,8 +113,16 @@ def main():
     # cv2.imshow("test", referenceEdges4)
     # cv2.imshow("test2", edges4)
     # houghTransform(image4, edges4, referenceEdges4, image4Origin)
-
-    cv2.waitKey(0)
+    #
+    # cv2.waitKey(0)
+    #
+    # image1 = cv2.imread(os.path.join(SRC_DIR, "waldo-draw-rotate-3.png"))
+    # referenceEdges1 = getEdges(os.path.join(TEMPLATE_DIR, "waldo-draw-templ.png"), 150, 200)
+    # edges1 = getEdges(os.path.join(SRC_DIR, "waldo-draw.png"), 150, 200)
+    # image1Origin = (45,45)
+    # houghTransform(image1, edges1, referenceEdges1, image1Origin)
+    #
+    # cv2.waitKey(0)
 
 if __name__ == "__main__":
     main()
